@@ -1,0 +1,8 @@
+rpc:
+  server-address: 127.0.0.1
+  server-port: 8888
+  registry:
+    store: zookeeper
+    zookeeper:
+      address: 127.0.0.1
+      port: 2881
