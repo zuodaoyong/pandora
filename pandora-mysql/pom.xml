@@ -9,26 +9,16 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>pandora-rpc</artifactId>
+    <artifactId>pandora-mysql</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>com.pandora</groupId>
-            <artifactId>pandora-common</artifactId>
-            <version>${version}</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.pandora</groupId>
-            <artifactId>pandora-mysql</artifactId>
-            <version>${version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>kryo</artifactId>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
     </dependencies>
 
