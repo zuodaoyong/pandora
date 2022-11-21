@@ -7,6 +7,7 @@ import com.pandora.rpc.registry.impl.MysqlRegistryService;
 import com.pandora.rpc.registry.impl.ZookeeperRegistryService;
 import com.pandora.rpc.registry.model.RegistryConfig;
 import com.pandora.utils.CommonUtils;
+import com.pandora.utils.IpUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -19,26 +20,6 @@ import java.util.Map;
 
 @Configuration
 public class RegistryAutoConfiguration {
-
-    /**
-     * mysql注册中心
-     * @return
-     */
-    @Bean
-    @Conditional(MysqlCondition.class)
-    public MysqlRegistryService mysqlRegistryService(){
-        return new MysqlRegistryService();
-    }
-
-    /**
-     * zk注册中心
-     * @return
-     */
-    @Bean
-    @Conditional(ZookeeperCondition.class)
-    public ZookeeperRegistryService zookeeperRegistryService(){
-        return new ZookeeperRegistryService();
-    }
 
 
     /**
@@ -69,12 +50,13 @@ public class RegistryAutoConfiguration {
                         String interfaceName = nettyRpcService.value().getName();
                         String version = nettyRpcService.version();
                         String serviceKey = CommonUtils.makeServiceKey(interfaceName, version);
+                        registryConfig.setHost(IpUtils.getIp());
+                        registryConfig.setPort(8888);
                         registryConfig.getServiceMap().put(serviceKey, serviceBean);
                     }
                 }
             }
         };
-        System.out.println(registryConfig);
         return registryConfig;
     }
 

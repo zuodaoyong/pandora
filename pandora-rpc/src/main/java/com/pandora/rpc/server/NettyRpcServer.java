@@ -2,6 +2,7 @@ package com.pandora.rpc.server;
 
 import com.pandora.common.ThreadPoolUtils;
 import com.pandora.rpc.param.RpcConfigProperties;
+import com.pandora.rpc.registry.RegistryService;
 import com.pandora.rpc.registry.model.RegistryConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -10,6 +11,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -18,7 +20,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @Slf4j
 @Component
-public class NettyRpcServer implements RpcServer {
+public class NettyRpcServer implements RpcServer , InitializingBean {
 
     private Thread thread;
 
@@ -27,6 +29,9 @@ public class NettyRpcServer implements RpcServer {
 
     @Resource
     private RegistryConfig registryConfig;
+
+    @Resource
+    private RegistryService registerService;
 
     @Override
     public void start() throws Exception {
@@ -51,7 +56,7 @@ public class NettyRpcServer implements RpcServer {
 
                 if (serviceMap != null) {
                     //注册服务
-                    //serviceRegistry.registerService(host, port, serviceMap);
+                    registerService.registerService(registryConfig);
                 }
                 log.info("Server started on port {}", port);
                 future.channel().closeFuture().sync();
@@ -81,5 +86,10 @@ public class NettyRpcServer implements RpcServer {
             thread.interrupt();
         }
 
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        start();
     }
 }

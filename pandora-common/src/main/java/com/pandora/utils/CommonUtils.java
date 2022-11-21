@@ -1,8 +1,12 @@
 package com.pandora.utils;
 
+
+import java.net.InetAddress;
+
 public class CommonUtils {
 
     public static final String SERVICE_CONCAT_TOKEN = "#";
+
 
     public static String makeServiceKey(String interfaceName, String version) {
         String serviceKey = interfaceName;
@@ -11,5 +15,7 @@ public class CommonUtils {
         }
         return serviceKey;
     }
+
+
 
 }

@@ -14,7 +14,6 @@ public class JobExecutorApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(JobExecutorApplication.class, args);
 
-        RegistryConfig bean = context.getBean(RegistryConfig.class);
-        System.out.println(bean);
+
     }
 }
