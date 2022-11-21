@@ -1,11 +1,14 @@
-package com.pandora.rpc.server.impl;
+package com.pandora.rpc.server;
 
+import com.pandora.rpc.server.codec.*;
+import com.pandora.rpc.server.handler.RpcServerHandler;
+import com.pandora.rpc.server.serializer.Serializer;
+import com.pandora.rpc.server.serializer.kryo.KryoSerializer;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.springframework.core.serializer.Serializer;
 
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -24,12 +27,12 @@ public class RpcServerInitializer extends ChannelInitializer<SocketChannel> {
     public void initChannel(SocketChannel channel) throws Exception {
 //        Serializer serializer = ProtostuffSerializer.class.newInstance();
 //        Serializer serializer = HessianSerializer.class.newInstance();
-        //Serializer serializer = KryoSerializer.class.newInstance();
+        Serializer serializer = KryoSerializer.class.newInstance();
         ChannelPipeline cp = channel.pipeline();
-        //cp.addLast(new IdleStateHandler(0, 0, Beat.BEAT_TIMEOUT, TimeUnit.SECONDS));
-        //cp.addLast(new LengthFieldBasedFrameDecoder(65536, 0, 4, 0, 0));
-        //cp.addLast(new RpcDecoder(RpcRequest.class, serializer));
-        //cp.addLast(new RpcEncoder(RpcResponse.class, serializer));
-        //cp.addLast(new RpcServerHandler(handlerMap, threadPoolExecutor));
+        cp.addLast(new IdleStateHandler(0, 0, Beat.BEAT_TIMEOUT, TimeUnit.SECONDS));
+        cp.addLast(new LengthFieldBasedFrameDecoder(65536, 0, 4, 0, 0));
+        cp.addLast(new RpcDecoder(RpcRequest.class, serializer));
+        cp.addLast(new RpcEncoder(RpcResponse.class, serializer));
+        cp.addLast(new RpcServerHandler(handlerMap, threadPoolExecutor));
     }
 }

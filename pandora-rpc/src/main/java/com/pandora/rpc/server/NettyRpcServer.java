@@ -1,9 +1,8 @@
-package com.pandora.rpc.server.impl;
+package com.pandora.rpc.server;
 
 import com.pandora.common.ThreadPoolUtils;
 import com.pandora.rpc.param.RpcConfigProperties;
 import com.pandora.rpc.registry.model.RegistryConfig;
-import com.pandora.rpc.server.RpcServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -34,13 +33,15 @@ public class NettyRpcServer implements RpcServer {
         ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtils.createThreadPool(
                 NettyRpcServer.class.getSimpleName(), 16, 32);
         thread=new Thread(()->{
+
             EventLoopGroup bossGroup = new NioEventLoopGroup();
             EventLoopGroup workerGroup = new NioEventLoopGroup();
 
+            Map<String, Object> serviceMap = registryConfig.getServiceMap();
             try {
                 ServerBootstrap bootstrap = new ServerBootstrap();
                 bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-                        //.childHandler(new RpcServerInitializer(serviceMap, threadPoolExecutor))
+                        .childHandler(new RpcServerInitializer(serviceMap, threadPoolExecutor))
                         .option(ChannelOption.SO_BACKLOG, 128)
                         .childOption(ChannelOption.SO_KEEPALIVE, true);
 
@@ -48,7 +49,6 @@ public class NettyRpcServer implements RpcServer {
                 int port = registryConfig.getPort();
                 ChannelFuture future = bootstrap.bind(host, port).sync();
 
-                Map<String, Object> serviceMap = registryConfig.getServiceMap();
                 if (serviceMap != null) {
                     //注册服务
                     //serviceRegistry.registerService(host, port, serviceMap);
