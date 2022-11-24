@@ -2,6 +2,7 @@ package com.pandora.rpc.registry.condition;
 
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import com.pandora.rpc.param.RpcConfigProperties;
 
@@ -11,9 +12,11 @@ public class MysqlCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 
-        RpcConfigProperties rpcConfigProperties = context.getBeanFactory().getBean(RpcConfigProperties.class);
+        Environment environment = context.getEnvironment();
 
-        RpcConfigProperties.Registry.Store store = rpcConfigProperties.getRegistry().getStore();
+        String registryStore = environment.getProperty("rpc.registry.store");
+
+        RpcConfigProperties.Registry.Store store = RpcConfigProperties.Registry.Store.valueOf(registryStore);
 
         return RpcConfigProperties.Registry.Store.Mysql == store ? true : false;
     }

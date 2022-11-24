@@ -1,21 +1,37 @@
 package com.pandora.utils;
 
 
-import java.net.InetAddress;
+import com.pandora.common.Constants;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class CommonUtils {
 
-    public static final String SERVICE_CONCAT_TOKEN = "#";
-
-
+    /**
+     * seviceName和version组装成key
+     *
+     * @param interfaceName
+     * @param version
+     * @return
+     */
     public static String makeServiceKey(String interfaceName, String version) {
         String serviceKey = interfaceName;
         if (version != null && version.trim().length() > 0) {
-            serviceKey += SERVICE_CONCAT_TOKEN.concat(version);
+            serviceKey += Constants.SERVICE_CONCAT_TOKEN.concat(version);
         }
         return serviceKey;
     }
 
+    /**
+     * key转换为serviceName和version
+     *
+     * @param serviceKey
+     * @return
+     */
+    public static Pair<String, String> serviceVersionPair(String serviceKey) {
+        String[] split = serviceKey.split(Constants.SERVICE_CONCAT_TOKEN);
+        return new ImmutablePair<>(split[0], split[1]);
+    }
 
 
 }

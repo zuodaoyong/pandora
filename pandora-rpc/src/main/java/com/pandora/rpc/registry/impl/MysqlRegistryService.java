@@ -2,10 +2,14 @@ package com.pandora.rpc.registry.impl;
 
 import com.pandora.mysql.Mapper.RegistryInfoMapper;
 import com.pandora.mysql.model.RegistryInfo;
+import com.pandora.rpc.param.RpcConfigProperties;
 import com.pandora.rpc.registry.RegistryService;
 import com.pandora.rpc.registry.condition.MysqlCondition;
 import com.pandora.rpc.registry.model.RegistryConfig;
+import com.pandora.utils.CommonUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
@@ -35,14 +39,14 @@ public class MysqlRegistryService implements RegistryService {
             while (iterator.hasNext()){
                 Map.Entry<String, Object> next = iterator.next();
                 String serviceKey = next.getKey();
-                String serviceName = (String)next.getValue();
+                Pair<String, String> serviceVersionPair = CommonUtils.serviceVersionPair(serviceKey);
                 RegistryInfo registryInfo=new RegistryInfo();
                 registryInfo.setNode(registryConfig.getHost());
                 registryInfo.setPort(registryConfig.getPort());
                 registryInfo.setGmtCreate(now);
                 registryInfo.setGmtModify(now);
-                registryInfo.setServiceKey(serviceKey);
-                registryInfo.setServiceName(serviceName);
+                registryInfo.setVersion(serviceVersionPair.getValue());
+                registryInfo.setServiceName(serviceVersionPair.getKey());
                 registryInfoMapper.insert(registryInfo);
             }
         }

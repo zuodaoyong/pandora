@@ -2,7 +2,7 @@ package com.pandora.common;
 
 public class Constants {
 
-
+    public static final String SERVICE_CONCAT_TOKEN = "#";
 
 
     public static class Zookeeper{

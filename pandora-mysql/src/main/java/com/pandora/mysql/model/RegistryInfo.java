@@ -20,7 +20,7 @@ public class RegistryInfo {
 
     private String serviceName;
 
-    private String serviceKey;
+    private String version;
 
     private Date gmtCreate;
 

@@ -76,7 +76,7 @@ public class NettyRpcServer implements RpcServer , InitializingBean {
                 }
             }
         });
-
+        thread.start();
     }
 
     @Override

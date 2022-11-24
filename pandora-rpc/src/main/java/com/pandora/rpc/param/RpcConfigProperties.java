@@ -2,9 +2,9 @@ package com.pandora.rpc.param;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 @ConfigurationProperties(prefix = "rpc")
 @Data
 public class RpcConfigProperties {
