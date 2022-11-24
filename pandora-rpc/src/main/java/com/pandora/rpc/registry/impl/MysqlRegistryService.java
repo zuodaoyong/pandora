@@ -2,16 +2,15 @@ package com.pandora.rpc.registry.impl;
 
 import com.pandora.mysql.Mapper.RegistryInfoMapper;
 import com.pandora.mysql.model.RegistryInfo;
-import com.pandora.rpc.param.RpcConfigProperties;
 import com.pandora.rpc.registry.RegistryService;
 import com.pandora.rpc.registry.condition.MysqlCondition;
 import com.pandora.rpc.registry.model.RegistryConfig;
 import com.pandora.utils.CommonUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -28,11 +27,11 @@ public class MysqlRegistryService implements RegistryService {
     @Resource
     private RegistryInfoMapper registryInfoMapper;
 
+    @Transactional(rollbackFor=Exception.class)
     @Override
     public void registerService(RegistryConfig registryConfig) {
-
+        registryInfoMapper.truncate();
         Date now =new Date();
-
         Map<String, Object> serviceMap = registryConfig.getServiceMap();
         if(MapUtils.isNotEmpty(serviceMap)){
             Iterator<Map.Entry<String, Object>> iterator = serviceMap.entrySet().iterator();
