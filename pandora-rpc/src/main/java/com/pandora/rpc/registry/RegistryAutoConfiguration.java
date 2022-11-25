@@ -24,7 +24,7 @@ public class RegistryAutoConfiguration {
      * @return
      */
     @Bean
-    public RpcProtocol registryConfig(ApplicationContext applicationContext){
+    public RpcProtocol rpcProtocol(ApplicationContext applicationContext){
         final RpcProtocol registryConfig =new RpcProtocol();
         ApplicationContextAware applicationContextAware = new ApplicationContextAware() {
             @Override
