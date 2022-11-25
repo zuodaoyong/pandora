@@ -1,4 +1,4 @@
-package com.pandora.rpc.registry.model;
+package com.pandora.rpc.protocol;
 
 import lombok.Data;
 import lombok.ToString;
@@ -8,7 +8,7 @@ import java.util.Map;
 
 @ToString
 @Data
-public class RegistryConfig {
+public class RpcProtocol {
 
     private String host;
 

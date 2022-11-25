@@ -2,9 +2,9 @@ package com.pandora.rpc.registry.impl;
 
 import com.pandora.mysql.Mapper.RegistryInfoMapper;
 import com.pandora.mysql.model.RegistryInfo;
+import com.pandora.rpc.condition.MysqlCondition;
+import com.pandora.rpc.protocol.RpcProtocol;
 import com.pandora.rpc.registry.RegistryService;
-import com.pandora.rpc.registry.condition.MysqlCondition;
-import com.pandora.rpc.registry.model.RegistryConfig;
 import com.pandora.utils.CommonUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,10 +29,10 @@ public class MysqlRegistryService implements RegistryService {
 
     @Transactional(rollbackFor=Exception.class)
     @Override
-    public void registerService(RegistryConfig registryConfig) {
+    public void registerService(RpcProtocol rpcProtocol) {
         registryInfoMapper.truncate();
         Date now =new Date();
-        Map<String, Object> serviceMap = registryConfig.getServiceMap();
+        Map<String, Object> serviceMap = rpcProtocol.getServiceMap();
         if(MapUtils.isNotEmpty(serviceMap)){
             Iterator<Map.Entry<String, Object>> iterator = serviceMap.entrySet().iterator();
             while (iterator.hasNext()){
@@ -40,8 +40,8 @@ public class MysqlRegistryService implements RegistryService {
                 String serviceKey = next.getKey();
                 Pair<String, String> serviceVersionPair = CommonUtils.serviceVersionPair(serviceKey);
                 RegistryInfo registryInfo=new RegistryInfo();
-                registryInfo.setNode(registryConfig.getHost());
-                registryInfo.setPort(registryConfig.getPort());
+                registryInfo.setNode(rpcProtocol.getHost());
+                registryInfo.setPort(rpcProtocol.getPort());
                 registryInfo.setGmtCreate(now);
                 registryInfo.setGmtModify(now);
                 registryInfo.setVersion(serviceVersionPair.getValue());

@@ -1,7 +1,7 @@
 package com.pandora.rpc.registry;
 
 import com.pandora.annotation.NettyRpcService;
-import com.pandora.rpc.registry.model.RegistryConfig;
+import com.pandora.rpc.protocol.RpcProtocol;
 import com.pandora.utils.CommonUtils;
 import com.pandora.utils.IpUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +24,8 @@ public class RegistryAutoConfiguration {
      * @return
      */
     @Bean
-    public RegistryConfig registryConfig(ApplicationContext applicationContext){
-        final RegistryConfig registryConfig =new RegistryConfig();
+    public RpcProtocol registryConfig(ApplicationContext applicationContext){
+        final RpcProtocol registryConfig =new RpcProtocol();
         ApplicationContextAware applicationContextAware = new ApplicationContextAware() {
             @Override
             public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

@@ -2,8 +2,8 @@ package com.pandora.rpc.server;
 
 import com.pandora.common.ThreadPoolUtils;
 import com.pandora.rpc.param.RpcConfigProperties;
+import com.pandora.rpc.protocol.RpcProtocol;
 import com.pandora.rpc.registry.RegistryService;
-import com.pandora.rpc.registry.model.RegistryConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -28,7 +28,7 @@ public class NettyRpcServer implements RpcServer , InitializingBean {
     private RpcConfigProperties rpcConfigProperties;
 
     @Resource
-    private RegistryConfig registryConfig;
+    private RpcProtocol rpcProtocol;
 
     @Resource
     private RegistryService registerService;
@@ -42,7 +42,7 @@ public class NettyRpcServer implements RpcServer , InitializingBean {
             EventLoopGroup bossGroup = new NioEventLoopGroup();
             EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-            Map<String, Object> serviceMap = registryConfig.getServiceMap();
+            Map<String, Object> serviceMap = rpcProtocol.getServiceMap();
             try {
                 ServerBootstrap bootstrap = new ServerBootstrap();
                 bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
@@ -50,13 +50,13 @@ public class NettyRpcServer implements RpcServer , InitializingBean {
                         .option(ChannelOption.SO_BACKLOG, 128)
                         .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-                String host = registryConfig.getHost();
-                int port = registryConfig.getPort();
+                String host = rpcProtocol.getHost();
+                int port = rpcProtocol.getPort();
                 ChannelFuture future = bootstrap.bind(host, port).sync();
 
                 if (serviceMap != null) {
                     //注册服务
-                    registerService.registerService(registryConfig);
+                    registerService.registerService(rpcProtocol);
                 }
                 log.info("Server started on port {}", port);
                 future.channel().closeFuture().sync();

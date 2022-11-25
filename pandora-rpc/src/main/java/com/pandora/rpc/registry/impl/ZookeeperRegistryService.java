@@ -1,8 +1,8 @@
 package com.pandora.rpc.registry.impl;
 
+import com.pandora.rpc.condition.ZookeeperCondition;
+import com.pandora.rpc.protocol.RpcProtocol;
 import com.pandora.rpc.registry.RegistryService;
-import com.pandora.rpc.registry.condition.ZookeeperCondition;
-import com.pandora.rpc.registry.model.RegistryConfig;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class ZookeeperRegistryService implements RegistryService {
 
     @Override
-    public void registerService(RegistryConfig registryConfig) {
+    public void registerService(RpcProtocol rpcProtocol) {
 
 
 

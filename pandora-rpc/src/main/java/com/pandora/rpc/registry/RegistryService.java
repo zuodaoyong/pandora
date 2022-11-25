@@ -1,6 +1,6 @@
 package com.pandora.rpc.registry;
 
-import com.pandora.rpc.registry.model.RegistryConfig;
+import com.pandora.rpc.protocol.RpcProtocol;
 
 public interface RegistryService {
 
@@ -8,7 +8,7 @@ public interface RegistryService {
     /**
      * 注册服务
      *
-     * @param registryConfig
+     * @param rpcProtocol
      */
-    void registerService(RegistryConfig registryConfig);
+    void registerService(RpcProtocol rpcProtocol);
 }
