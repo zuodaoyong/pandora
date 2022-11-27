@@ -19,7 +19,5 @@ public class MysqlServiceDiscoveryService implements ServiceDiscovery {
     public void discoveryService() {
 
 
-
-
     }
 }

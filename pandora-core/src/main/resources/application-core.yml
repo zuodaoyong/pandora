@@ -1,2 +1,7 @@
 log:
   base-path: ../data123
+
+distributed:
+  group-name: dev
+  total-partition: 16
+  meta-store: Mysql

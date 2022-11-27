@@ -10,20 +10,14 @@ import java.util.Date;
  */
 @TableName("registry_info")
 @Data
-public class RegistryInfo {
+public class RegistryInfo extends BaseInfo{
 
-    private Long id;
-
-    private String node;
+    private String nodeName;
 
     private int port;
 
     private String serviceName;
 
     private String version;
-
-    private Date gmtCreate;
-
-    private Date gmtModify;
 
 }

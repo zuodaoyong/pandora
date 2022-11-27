@@ -25,6 +25,10 @@ public class IpUtils {
         return getLocalAddress().getHostAddress();
     }
 
+    public static String getNodeName(){
+        return getLocalAddress().getHostName();
+    }
+
     private static InetAddress getLocalAddress() {
         if (LOCAL_ADDRESS != null) {
             return LOCAL_ADDRESS;

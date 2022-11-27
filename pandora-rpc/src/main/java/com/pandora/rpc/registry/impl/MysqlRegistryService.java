@@ -1,8 +1,10 @@
 package com.pandora.rpc.registry.impl;
 
+import com.pandora.mysql.Mapper.NodeInfoMapper;
 import com.pandora.mysql.Mapper.RegistryInfoMapper;
 import com.pandora.mysql.model.RegistryInfo;
 import com.pandora.rpc.condition.MysqlCondition;
+import com.pandora.rpc.param.RpcConfigProperties;
 import com.pandora.rpc.protocol.RpcProtocol;
 import com.pandora.rpc.registry.RegistryService;
 import com.pandora.utils.CommonUtils;
@@ -27,9 +29,18 @@ public class MysqlRegistryService implements RegistryService {
     @Resource
     private RegistryInfoMapper registryInfoMapper;
 
+    @Resource
+    private NodeInfoMapper nodeInfoMapper;
+
+
+
+    @Resource
+    private RpcConfigProperties rpcConfigProperties;
+
     @Transactional(rollbackFor=Exception.class)
     @Override
     public void registerService(RpcProtocol rpcProtocol) {
+        //清楚历史服务
         registryInfoMapper.truncate();
         Date now =new Date();
         Map<String, Object> serviceMap = rpcProtocol.getServiceMap();
@@ -40,7 +51,7 @@ public class MysqlRegistryService implements RegistryService {
                 String serviceKey = next.getKey();
                 Pair<String, String> serviceVersionPair = CommonUtils.serviceVersionPair(serviceKey);
                 RegistryInfo registryInfo=new RegistryInfo();
-                registryInfo.setNode(rpcProtocol.getHost());
+                registryInfo.setNodeName(rpcProtocol.getHost());
                 registryInfo.setPort(rpcProtocol.getPort());
                 registryInfo.setGmtCreate(now);
                 registryInfo.setGmtModify(now);
@@ -49,6 +60,11 @@ public class MysqlRegistryService implements RegistryService {
                 registryInfoMapper.insert(registryInfo);
             }
         }
-
     }
+
+
+
+
+
+
 }

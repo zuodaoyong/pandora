@@ -16,16 +16,17 @@ import java.util.Map;
 
 @Slf4j
 @Configuration
-public class RegistryAutoConfiguration {
+public class RegistryConfiguration {
 
 
     /**
      * 注册服务
+     *
      * @return
      */
     @Bean
-    public RpcProtocol rpcProtocol(ApplicationContext applicationContext){
-        final RpcProtocol registryConfig =new RpcProtocol();
+    public RpcProtocol rpcProtocol(ApplicationContext applicationContext) {
+        final RpcProtocol rpcProtocol = new RpcProtocol();
         ApplicationContextAware applicationContextAware = new ApplicationContextAware() {
             @Override
             public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -39,15 +40,15 @@ public class RegistryAutoConfiguration {
                         String interfaceName = nettyRpcService.value().getName();
                         String version = nettyRpcService.version();
                         String serviceKey = CommonUtils.makeServiceKey(interfaceName, version);
-                        registryConfig.setHost(IpUtils.getIp());
-                        registryConfig.setPort(8888);
-                        registryConfig.getServiceMap().put(serviceKey, serviceBean);
+                        rpcProtocol.setHost(IpUtils.getIp());
+                        rpcProtocol.setPort(8888);
+                        rpcProtocol.getServiceMap().put(serviceKey, serviceBean);
                     }
                 }
             }
         };
         applicationContextAware.setApplicationContext(applicationContext);
-        return registryConfig;
+        return rpcProtocol;
     }
 
 
