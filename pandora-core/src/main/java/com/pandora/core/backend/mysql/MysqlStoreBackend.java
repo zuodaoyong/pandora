@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 @Component
 @Conditional(MysqlCondition.class)
@@ -31,7 +32,7 @@ public class MysqlStoreBackend implements MetaStoreBackend {
     private PartitionInfoMapper partitionInfoMapper;
 
     @Override
-    public void registerNodeInfo() {
+    public NodeInfo registerNodeInfo() {
         Date now = new Date();
         NodeInfo nodeInfo=new NodeInfo();
         nodeInfo.setGroupName(distributedTaskConfigProperties.getGroupName());
@@ -40,6 +41,22 @@ public class MysqlStoreBackend implements MetaStoreBackend {
         nodeInfo.setActive(true);
         nodeInfo.setHeartbeat(now);
         nodeInfoMapper.insert(nodeInfo);
+        return nodeInfo;
+    }
+
+    @Override
+    public List<NodeInfo> queryAllHeartbeatTimeOutNodeInfo(Long heartbeatTimeOut) {
+        return nodeInfoMapper.queryAllHeartbeatTimeOutNodeInfo(heartbeatTimeOut);
+    }
+
+    @Override
+    public boolean heartbeat(String nodeIp, Date hearbeat) {
+        return nodeInfoMapper.heartbeat(nodeIp,hearbeat);
+    }
+
+    @Override
+    public boolean offLineHeartbeatNode(String offLineNodeIp, String nodeIp) {
+        return nodeInfoMapper.offLineHeartbeatNode(offLineNodeIp,nodeIp);
     }
 
     /**

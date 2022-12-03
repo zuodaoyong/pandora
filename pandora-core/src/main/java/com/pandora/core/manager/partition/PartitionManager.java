@@ -14,7 +14,7 @@ public class PartitionManager extends BaseDistributedTaskManager {
 
     @Override
     public void prePare() {
-        this.setStatus(StatusEnum.RUNNING);
+        super.prePare();
     }
 
     @Override

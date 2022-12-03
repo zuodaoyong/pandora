@@ -35,4 +35,9 @@ public class NodeInfo extends BaseInfo{
      */
     private boolean isActive;
 
+    /**
+     * 当node_ip不能心跳时，由offline_ip来处理后续事情
+     */
+    private String offLineIp;
+
 }

@@ -17,11 +17,12 @@ public class ThreadPoolUtils {
                 new ThreadFactory() {
                     @Override
                     public Thread newThread(Runnable r) {
-                        return new Thread(r, "netty-rpc-" + name + "-" + r.hashCode());
+                        return new Thread(r, name + "-" + r.hashCode());
                     }
                 },
                 new ThreadPoolExecutor.AbortPolicy());
 
         return serverHandlerPool;
     }
+
 }

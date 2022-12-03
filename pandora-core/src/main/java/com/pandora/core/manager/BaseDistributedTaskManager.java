@@ -13,6 +13,11 @@ public abstract class BaseDistributedTaskManager implements DistributedTaskManag
     }
 
     @Override
+    public void prePare() {
+        this.setStatus(StatusEnum.RUNNING);
+    }
+
+    @Override
     public void start() {
         if(StatusEnum.RUNNING==status){
             this.execute();
