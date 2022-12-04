@@ -1,7 +1,6 @@
 package com.pandora.core.backend.mysql;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.pandora.core.backend.MetaStoreBackend;
 import com.pandora.core.condition.MysqlCondition;
 import com.pandora.core.param.DistributedTaskConfigProperties;
@@ -33,6 +32,10 @@ public class MysqlStoreBackend implements MetaStoreBackend {
 
     @Override
     public NodeInfo registerNodeInfo() {
+        NodeInfo dbNodeInfo = checkNode();
+        if (dbNodeInfo!=null) {
+            return dbNodeInfo;
+        }
         Date now = new Date();
         NodeInfo nodeInfo = new NodeInfo();
         nodeInfo.setGroupName(distributedTaskConfigProperties.getGroupName());
@@ -75,7 +78,7 @@ public class MysqlStoreBackend implements MetaStoreBackend {
             if (!checkPartition) {
                 PartitionInfo partitionInfo = new PartitionInfo();
                 partitionInfo.setGroupName(groupName);
-                partitionInfo.setPartition(i);
+                partitionInfo.setPartitionNo(i);
                 partitionInfo.setNodeName(null);
                 partitionInfoMapper.insert(partitionInfo);
             }
@@ -94,6 +97,24 @@ public class MysqlStoreBackend implements MetaStoreBackend {
         return partitionInfoMapper.queryNodeHoldingPartition(groupName, nodeName);
     }
 
+    @Override
+    public Integer activeNodeTotalCount() {
+        String groupName = distributedTaskConfigProperties.getGroupName();
+        return nodeInfoMapper.activeNodeTotalCount(groupName);
+    }
+
+    @Override
+    public List<Integer> queryIdlePartitions(Integer limit) {
+        String groupName = distributedTaskConfigProperties.getGroupName();
+        return partitionInfoMapper.queryIdlePartitions(groupName, limit);
+    }
+
+    @Override
+    public Integer tryAcquirePartition(String nodeName, Integer partition) {
+        String groupName = distributedTaskConfigProperties.getGroupName();
+        return partitionInfoMapper.tryAcquirePartition(groupName, nodeName, partition);
+    }
+
     /**
      * 判断是否已经分配过该分区
      *
@@ -102,9 +123,18 @@ public class MysqlStoreBackend implements MetaStoreBackend {
      * @return
      */
     private boolean checkPartition(String groupName, Integer partition) {
-        QueryWrapper<PartitionInfo> queryWrapper = new QueryWrapper<PartitionInfo>().eq("group_name", groupName)
-                .eq("partition", partition);
-        Long count = partitionInfoMapper.selectCount(queryWrapper);
-        return count != null && count > 0 ? true : false;
+        Integer checkPartition = partitionInfoMapper.checkPartition(groupName, partition);
+        return checkPartition != null && checkPartition > 0 ? true : false;
+    }
+
+    /**
+     * 检查是否注册过该节点
+     *
+     * @return
+     */
+    private NodeInfo checkNode() {
+        String groupName = distributedTaskConfigProperties.getGroupName();
+        NodeInfo nodeInfo = nodeInfoMapper.checkNode(groupName, IpUtils.getIp());
+        return nodeInfo;
     }
 }

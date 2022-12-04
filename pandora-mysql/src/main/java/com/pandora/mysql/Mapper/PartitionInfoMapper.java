@@ -10,12 +10,22 @@ import java.util.List;
 
 public interface PartitionInfoMapper extends BaseMapper<PartitionInfo> {
 
+
+    @Select("SELECT COUNT( * ) FROM partition_info WHERE group_name = #{groupName} AND partition_no = #{partition}")
+    Integer checkPartition(@Param("groupName") String groupName,@Param("partition") Integer partition);
+
     @Update("update partition_info set node_name=null where group_name=#{groupName} and node_name=#{nodeName} " +
-            "and partition in <foreach collection='holdingPartitions' item='partition' index='index' open='(' separator=',' close =')'>" +
+            "and partition_no in <foreach collection='holdingPartitions' item='partition' index='index' open='(' separator=',' close =')'>" +
             "#{partition}" +
             "</foreach>")
     boolean releaseNodeHoldingPartition(@Param("groupName") String groupName, @Param("nodeName") String nodeName, List<Integer> holdingPartitions);
 
-    @Select("select partition from partition_info where group_name=#{groupName} and node_name=#{nodeName}")
+    @Select("select partition_no from partition_info where group_name=#{groupName} and node_name=#{nodeName}")
     List<Integer> queryNodeHoldingPartition(@Param("groupName") String groupName, @Param("nodeName") String nodeName);
+
+    @Select("select partition_no from partition_info where group_name=#{groupName} and node_name is null limit #{limit}")
+    List<Integer> queryIdlePartitions(@Param("groupName") String groupName,@Param("limit") Integer limit);
+
+    @Update("update partition_info set node_name=#{nodeName} where node_name is null and partition_no=#{partition}")
+    Integer tryAcquirePartition(@Param("groupName") String groupName,@Param("nodeName") String nodeName, @Param("partition") Integer partition);
 }

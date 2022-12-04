@@ -20,5 +20,5 @@ public class PartitionInfo extends BaseInfo {
     /**
      * 分区号
      */
-    private Integer partition;
+    private Integer partitionNo;
 }

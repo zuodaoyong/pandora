@@ -60,4 +60,28 @@ public interface MetaStoreBackend {
      * @return
      */
     List<Integer> queryNodeHoldingPartition(String nodeName);
+
+    /**
+     * 获取存活的节点数
+     *
+     * @return
+     */
+    Integer activeNodeTotalCount();
+
+    /**
+     * 一次性获取空闲的分区号
+     *
+     * @param limit
+     * @return
+     */
+    List<Integer> queryIdlePartitions(Integer limit);
+
+    /**
+     * 申请分配分区
+     *
+     * @param nodeName
+     * @param partition
+     * @return
+     */
+    Integer tryAcquirePartition(String nodeName, Integer partition);
 }

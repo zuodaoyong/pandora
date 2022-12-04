@@ -32,13 +32,15 @@ public class NodeHeartbeatExecutor implements Runnable {
         while (BaseDistributedTaskManager.StatusEnum.RUNNING == nodeManager.getStatus()) {
             String groupName = distributedTaskConfigProperties.getGroupName();
             try {
-                NodeInfo nodeInfo = nodeManager.nodeInfo();
-                log.info("{} heartbeat start...", nodeInfo.getNodeName());
+                NodeInfo nodeInfo = nodeManager.getNodeInfo();
+                //log.info("{} heartbeat start...", nodeInfo.getNodeName());
                 //1、触发心跳
                 heartbeat(nodeInfo);
-                //2、处理心跳超时的节点
+                //2、获取存活节点数
+                setActiveNodeCount();
+                //3、处理心跳超时的节点
                 handleHeartbeatTimeOutNode(nodeInfo);
-                log.info("{} heartbeat end...", nodeInfo.getNodeName());
+                //log.info("{} heartbeat end...", nodeInfo.getNodeName());
 
             } catch (Exception e) {
                 log.error(NodeHeartbeatExecutor.class.getSimpleName() + "heartbeat error", e);
@@ -58,6 +60,14 @@ public class NodeHeartbeatExecutor implements Runnable {
      */
     private void heartbeat(NodeInfo nodeInfo) {
         metaStoreBackend.heartbeat(nodeInfo.getNodeIp(), new Date());
+    }
+
+    /**
+     * 获取存活的节点总数，保存在nodeManager中
+     */
+    private void setActiveNodeCount(){
+        Integer count = metaStoreBackend.activeNodeTotalCount();
+        nodeManager.setActiveNodeTotalCount(count);
     }
 
     /**
