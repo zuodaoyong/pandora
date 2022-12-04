@@ -3,7 +3,6 @@ package com.pandora.core.manager.partition.executor;
 import com.pandora.core.backend.MetaStoreBackend;
 import com.pandora.core.manager.BaseDistributedTaskManager;
 import com.pandora.core.manager.node.NodeManager;
-import com.pandora.core.manager.node.executor.NodeHeartbeatExecutor;
 import com.pandora.core.manager.partition.PartitionManager;
 import com.pandora.core.param.DistributedTaskConfigProperties;
 import com.pandora.mysql.model.NodeInfo;
@@ -40,22 +39,22 @@ public class PartitionReBalanceExecutor implements Runnable {
                 NodeInfo nodeInfo = nodeManager.getNodeInfo();
                 String nodeName = nodeInfo.getNodeName();
                 Integer maxPartitionCount = calcHoldingMaxPartitionCount();
-                log.info("maxPartitionCount is {}",maxPartitionCount);
+                log.info("maxPartitionCount is {}", maxPartitionCount);
                 if (maxPartitionCount.intValue() == -1) {
                     return;
                 }
-                boolean hasIdlePartitionSlot = hasIdlePartitionSlot(nodeName,maxPartitionCount);
-                log.info("hasIdlePartitionSlot is {}",hasIdlePartitionSlot);
+                boolean hasIdlePartitionSlot = hasIdlePartitionSlot(nodeName, maxPartitionCount);
+                log.info("hasIdlePartitionSlot is {}", hasIdlePartitionSlot);
                 if (hasIdlePartitionSlot) {
                     log.info("start tryAcquirePartition ...");
                     tryAcquirePartition(nodeName);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error(PartitionReBalanceExecutor.class.getSimpleName() + "heartbeat error", e);
-            }finally {
+            } finally {
                 try {
                     Thread.sleep(1000);
-                }catch (Exception e){
+                } catch (Exception e) {
                     log.error(PartitionReBalanceExecutor.class.getSimpleName() + "sleep error", e);
                 }
             }
@@ -64,11 +63,12 @@ public class PartitionReBalanceExecutor implements Runnable {
 
     /**
      * 是否还有空闲的分区槽位
+     *
      * @param nodeName
      * @param maxPartitionCount
      * @return
      */
-    private boolean hasIdlePartitionSlot(String nodeName,Integer maxPartitionCount) {
+    private boolean hasIdlePartitionSlot(String nodeName, Integer maxPartitionCount) {
         List<Integer> holdingPartitions = metaStoreBackend.queryNodeHoldingPartition(nodeName);
         return maxPartitionCount > 0 && holdingPartitions.size() < maxPartitionCount;
     }
@@ -90,13 +90,13 @@ public class PartitionReBalanceExecutor implements Runnable {
     /**
      * 尝试申请分区
      */
-    private void tryAcquirePartition(String nodeName){
+    private void tryAcquirePartition(String nodeName) {
         List<Integer> idlePartitions = metaStoreBackend.queryIdlePartitions(1);
-        if(CollectionUtils.isEmpty(idlePartitions)){
+        if (CollectionUtils.isEmpty(idlePartitions)) {
             return;
         }
-        for(Integer partition:idlePartitions){
-            metaStoreBackend.tryAcquirePartition(nodeName,partition);
+        for (Integer partition : idlePartitions) {
+            metaStoreBackend.tryAcquirePartition(nodeName, partition);
         }
     }
 }
