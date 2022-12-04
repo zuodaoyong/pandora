@@ -12,7 +12,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Component
 public class NodeManager extends BaseDistributedTaskManager {
 
-
     @Resource
     private MetaStoreBackend metaStoreBackend;
 
@@ -22,10 +21,12 @@ public class NodeManager extends BaseDistributedTaskManager {
     private NodeInfo nodeInfo;
 
     private ThreadPoolExecutor threadPool;
+
+
     @Override
     public void prePare() {
         super.prePare();
-        threadPool = ThreadPoolUtils.createThreadPool(NodeManager.class.getSimpleName(), 2, 3);
+        threadPool = ThreadPoolUtils.createThreadPool(NodeManager.class.getSimpleName(), 1, 1);
     }
 
     @Override

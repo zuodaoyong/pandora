@@ -16,10 +16,9 @@ public interface MetaStoreBackend {
     /**
      * 查询所有心跳超时的节点
      *
-     * @param heartbeatTimeOut
      * @return
      */
-    List<NodeInfo> queryAllHeartbeatTimeOutNodeInfo(Long heartbeatTimeOut);
+    List<NodeInfo> queryAllHeartbeatTimeOutNodeInfo();
 
     /**
      * 心跳
@@ -43,4 +42,22 @@ public interface MetaStoreBackend {
      * 注册分区信息
      */
     void registerPartitionInfo();
+
+
+    /**
+     * 释放节点持有的分区号
+     *
+     * @param nodeName
+     * @param holdingPartitions
+     * @return
+     */
+    boolean releaseNodeHoldingPartition(String nodeName, List<Integer> holdingPartitions);
+
+    /**
+     * 查询Node持有的分区号
+     *
+     * @param nodeName
+     * @return
+     */
+    List<Integer> queryNodeHoldingPartition(String nodeName);
 }

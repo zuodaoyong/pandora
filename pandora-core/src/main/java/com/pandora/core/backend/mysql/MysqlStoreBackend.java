@@ -34,7 +34,7 @@ public class MysqlStoreBackend implements MetaStoreBackend {
     @Override
     public NodeInfo registerNodeInfo() {
         Date now = new Date();
-        NodeInfo nodeInfo=new NodeInfo();
+        NodeInfo nodeInfo = new NodeInfo();
         nodeInfo.setGroupName(distributedTaskConfigProperties.getGroupName());
         nodeInfo.setNodeIp(IpUtils.getIp());
         nodeInfo.setNodeName(IpUtils.getNodeName());
@@ -45,18 +45,22 @@ public class MysqlStoreBackend implements MetaStoreBackend {
     }
 
     @Override
-    public List<NodeInfo> queryAllHeartbeatTimeOutNodeInfo(Long heartbeatTimeOut) {
-        return nodeInfoMapper.queryAllHeartbeatTimeOutNodeInfo(heartbeatTimeOut);
+    public List<NodeInfo> queryAllHeartbeatTimeOutNodeInfo() {
+        String groupName = distributedTaskConfigProperties.getGroupName();
+        Long heartbeatTimeOut = distributedTaskConfigProperties.getHeartbeatTimeOut();
+        return nodeInfoMapper.queryAllHeartbeatTimeOutNodeInfo(groupName, heartbeatTimeOut);
     }
 
     @Override
     public boolean heartbeat(String nodeIp, Date hearbeat) {
-        return nodeInfoMapper.heartbeat(nodeIp,hearbeat);
+        String groupName = distributedTaskConfigProperties.getGroupName();
+        return nodeInfoMapper.heartbeat(groupName, nodeIp, hearbeat);
     }
 
     @Override
     public boolean offLineHeartbeatNode(String offLineNodeIp, String nodeIp) {
-        return nodeInfoMapper.offLineHeartbeatNode(offLineNodeIp,nodeIp);
+        String groupName = distributedTaskConfigProperties.getGroupName();
+        return nodeInfoMapper.offLineHeartbeatNode(groupName, offLineNodeIp, nodeIp);
     }
 
     /**
@@ -66,16 +70,28 @@ public class MysqlStoreBackend implements MetaStoreBackend {
     public void registerPartitionInfo() {
         Integer totalPartition = distributedTaskConfigProperties.getTotalPartition();
         String groupName = distributedTaskConfigProperties.getGroupName();
-        for(int i=1;i<=totalPartition;i++){
+        for (int i = 1; i <= totalPartition; i++) {
             boolean checkPartition = checkPartition(groupName, i);
-            if(!checkPartition){
-                PartitionInfo partitionInfo=new PartitionInfo();
+            if (!checkPartition) {
+                PartitionInfo partitionInfo = new PartitionInfo();
                 partitionInfo.setGroupName(groupName);
                 partitionInfo.setPartition(i);
                 partitionInfo.setNodeName(null);
                 partitionInfoMapper.insert(partitionInfo);
             }
         }
+    }
+
+    @Override
+    public boolean releaseNodeHoldingPartition(String nodeName, List<Integer> holdingPartitions) {
+        String groupName = distributedTaskConfigProperties.getGroupName();
+        return partitionInfoMapper.releaseNodeHoldingPartition(groupName, nodeName, holdingPartitions);
+    }
+
+    @Override
+    public List<Integer> queryNodeHoldingPartition(String nodeName) {
+        String groupName = distributedTaskConfigProperties.getGroupName();
+        return partitionInfoMapper.queryNodeHoldingPartition(groupName, nodeName);
     }
 
     /**

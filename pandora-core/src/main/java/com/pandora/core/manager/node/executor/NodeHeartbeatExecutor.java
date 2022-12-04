@@ -3,9 +3,11 @@ package com.pandora.core.manager.node.executor;
 import com.pandora.core.backend.MetaStoreBackend;
 import com.pandora.core.manager.BaseDistributedTaskManager;
 import com.pandora.core.manager.node.NodeManager;
+import com.pandora.core.param.DistributedTaskConfigProperties;
 import com.pandora.mysql.model.NodeInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -22,11 +24,13 @@ public class NodeHeartbeatExecutor implements Runnable {
     @Resource
     private NodeManager nodeManager;
 
-    private Long heartbeatTimeOut=60L;
+    @Resource
+    private DistributedTaskConfigProperties distributedTaskConfigProperties;
 
     @Override
     public void run() {
         while (BaseDistributedTaskManager.StatusEnum.RUNNING == nodeManager.getStatus()) {
+            String groupName = distributedTaskConfigProperties.getGroupName();
             try {
                 NodeInfo nodeInfo = nodeManager.nodeInfo();
                 log.info("{} heartbeat start...", nodeInfo.getNodeName());
@@ -59,15 +63,21 @@ public class NodeHeartbeatExecutor implements Runnable {
     /**
      * 处理心跳超时的节点
      */
-    private void handleHeartbeatTimeOutNode(NodeInfo nodeInfo) {
-        List<NodeInfo> heartbeatTimeOutNodeInfoList = metaStoreBackend.queryAllHeartbeatTimeOutNodeInfo(heartbeatTimeOut);
+    @Transactional(rollbackFor = Exception.class)
+    public void handleHeartbeatTimeOutNode(NodeInfo nodeInfo) {
+        List<NodeInfo> heartbeatTimeOutNodeInfoList = metaStoreBackend.queryAllHeartbeatTimeOutNodeInfo();
         if (CollectionUtils.isEmpty(heartbeatTimeOutNodeInfoList)) {
             return;
         }
         for (NodeInfo timeOutNodeInfo : heartbeatTimeOutNodeInfoList) {
             boolean offLineHeartbeatNode = metaStoreBackend.offLineHeartbeatNode(nodeInfo.getNodeIp(), timeOutNodeInfo.getNodeIp());
             if (offLineHeartbeatNode) {
-
+                List<Integer> holdingPartitions=metaStoreBackend.queryNodeHoldingPartition(timeOutNodeInfo.getNodeName());
+                if(CollectionUtils.isEmpty(holdingPartitions)){
+                    return;
+                }
+                //释放节点持有的分区信息
+                metaStoreBackend.releaseNodeHoldingPartition(timeOutNodeInfo.getNodeName(),holdingPartitions);
             }
         }
     }

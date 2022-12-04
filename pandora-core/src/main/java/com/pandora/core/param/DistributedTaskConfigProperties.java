@@ -21,6 +21,8 @@ public class DistributedTaskConfigProperties {
 
     private MetaStore metaStore;
 
+    private Long heartbeatTimeOut;
+
     public enum MetaStore {
         Zookeeper,
 

@@ -5,6 +5,7 @@ import com.pandora.core.manager.BaseDistributedTaskManager;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Component
 public class PartitionManager extends BaseDistributedTaskManager {
@@ -24,7 +25,6 @@ public class PartitionManager extends BaseDistributedTaskManager {
 
 
 
+
     }
-
-
 }

@@ -5,3 +5,4 @@ distributed:
   group-name: dev
   total-partition: 16
   meta-store: Mysql
+  heartbeat-time-out: 60
